@@ -2,11 +2,11 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 export const scanReceipt = async (base64Image: string) => {
-  // Récupération sécurisée de la clé API au moment de l'appel
-  const apiKey = (window as any).process?.env?.API_KEY || (process?.env?.API_KEY);
+  // Utilisation directe de process.env.API_KEY comme requis
+  const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    throw new Error("Clé API manquante. Veuillez configurer process.env.API_KEY.");
+    throw new Error("Clé API manquante (process.env.API_KEY non configuré)");
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -22,7 +22,7 @@ export const scanReceipt = async (base64Image: string) => {
           },
         },
         {
-          text: "Extract all line items, prices, and quantities from this receipt image. Return ONLY a JSON array. Ignore subtotals, taxes, and totals.",
+          text: "Extract all line items, prices, and quantities from this receipt image. Return ONLY a JSON array. Schema: [{ name: string, price: number, quantity: integer }]. Ignore subtotals, taxes, and totals.",
         },
       ],
     },
@@ -49,7 +49,7 @@ export const scanReceipt = async (base64Image: string) => {
   try {
     return JSON.parse(text.trim());
   } catch (e) {
-    console.error("Erreur de parsing Gemini:", e, text);
+    console.error("Gemini Response Parse Error:", e, text);
     return [];
   }
 };
