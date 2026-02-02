@@ -1,0 +1,7 @@
+{
+  "name": "TABLy",
+  "description": "A friction-free bill-splitting app with AI receipt scanning. No signup, no login, instant results.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
