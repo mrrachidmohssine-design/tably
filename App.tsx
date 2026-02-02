@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { AppState, ReceiptItem, Friend, SplitRecord } from './types';
-import HomeScreen from './components/HomeScreen';
-import ScanningScreen from './components/ScanningScreen';
-import AssignScreen from './components/AssignScreen';
-import ResultScreen from './components/ResultScreen';
+import { AppState, ReceiptItem, Friend, SplitRecord } from './types.ts';
+import HomeScreen from './components/HomeScreen.tsx';
+import ScanningScreen from './components/ScanningScreen.tsx';
+import AssignScreen from './components/AssignScreen.tsx';
+import ResultScreen from './components/ResultScreen.tsx';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppState>(AppState.HOME);
@@ -17,9 +17,13 @@ const App: React.FC = () => {
   const [recentSplits, setRecentSplits] = useState<SplitRecord[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('tably_splits');
-    if (saved) {
-      setRecentSplits(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem('tably_splits');
+      if (saved) {
+        setRecentSplits(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("Erreur lors du chargement de l'historique", e);
     }
   }, []);
 
@@ -39,9 +43,9 @@ const App: React.FC = () => {
 
   const handleScanComplete = (parsedItems: any[]) => {
     const formatted: ReceiptItem[] = parsedItems.map((item, idx) => ({
-      id: `item-${idx}`,
-      name: item.name,
-      price: item.price,
+      id: `item-${idx}-${Date.now()}`,
+      name: item.name || 'Article sans nom',
+      price: typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0,
       quantity: item.quantity || 1,
       assignedTo: [],
     }));
@@ -50,7 +54,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen max-w-md mx-auto bg-white shadow-xl relative overflow-hidden flex flex-col">
+    <div className="min-h-screen max-w-md mx-auto bg-white shadow-xl relative overflow-hidden flex flex-col border-x border-slate-100">
       {currentScreen === AppState.HOME && (
         <HomeScreen 
           onScanStart={() => setCurrentScreen(AppState.SCANNING)} 

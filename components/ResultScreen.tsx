@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { ReceiptItem, Friend, SplitRecord } from '../types';
+import { ReceiptItem, Friend, SplitRecord } from '../types.ts';
 
 interface ResultScreenProps {
   items: ReceiptItem[];
@@ -35,7 +35,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
         }
       });
 
-      // Proportional distribution of Tax and Tip
       const proportion = subtotal > 0 ? (friendSubtotal / subtotal) : 0;
       const friendTax = tax * proportion;
       const friendTip = tipAmount * proportion;
@@ -57,7 +56,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
       id: Date.now().toString(),
       date: new Date().toLocaleDateString(),
       total,
-      restaurantName: "Dinner",
+      restaurantName: "Note",
       items,
       friends,
       tax,
@@ -68,15 +67,15 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
 
   const shareResult = () => {
     const summary = friendsBreakdown.map(f => {
-      return `${f.name}: $${f.total.toFixed(2)} (Sub: $${f.subtotal.toFixed(2)}, Tax/Tip: $${(f.tax + f.tip).toFixed(2)})`;
+      return `${f.name}: $${f.total.toFixed(2)} (Sous-total: $${f.subtotal.toFixed(2)})`;
     }).join('\n');
-    const text = `Bill Split via TABLy\nTotal: $${total.toFixed(2)}\n\n${summary}`;
+    const text = `Split avec TABLy\nTotal: $${total.toFixed(2)}\n\n${summary}`;
     
     if (navigator.share) {
       navigator.share({ title: 'TABLy Bill Split', text });
     } else {
       navigator.clipboard.writeText(text);
-      alert('Copied to clipboard!');
+      alert('Copié dans le presse-papier !');
     }
   };
 
@@ -97,18 +96,18 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
         {/* Subtotal Card */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
           <div className="flex justify-between items-center mb-6">
-            <span className="text-slate-400 font-bold uppercase text-xs tracking-widest">Grand Total</span>
+            <span className="text-slate-400 font-bold uppercase text-xs tracking-widest">Total Global</span>
             <span className="text-3xl font-black text-slate-900">${total.toFixed(2)}</span>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-600">Subtotal</span>
+              <span className="font-bold text-slate-600">Sous-total</span>
               <span className="font-bold text-slate-900">${subtotal.toFixed(2)}</span>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="font-bold text-slate-600">Tax</span>
+              <span className="font-bold text-slate-600">Taxe</span>
               <div className="flex items-center bg-slate-100 rounded-xl px-3 py-1">
                 <span className="text-slate-400 mr-1">$</span>
                 <input 
@@ -122,12 +121,12 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
 
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
-                <span className="font-bold text-slate-600">Tip</span>
+                <span className="font-bold text-slate-600">Pourboire</span>
                 <button 
                   onClick={() => setIsTipPercent(!isTipPercent)}
                   className="text-[10px] font-black text-emerald-500 uppercase tracking-tighter text-left"
                 >
-                  Switch to {isTipPercent ? 'Fixed' : 'Percent'}
+                  {isTipPercent ? 'Changer en $' : 'Changer en %'}
                 </button>
               </div>
               <div className="flex items-center bg-slate-100 rounded-xl px-3 py-1">
@@ -144,7 +143,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
         </div>
 
         {/* Individual Breakdowns */}
-        <h3 className="text-sm font-black uppercase text-slate-400 tracking-widest px-1">By Person</h3>
+        <h3 className="text-sm font-black uppercase text-slate-400 tracking-widest px-1">Par personne</h3>
         <div className="space-y-4">
           {friendsBreakdown.map(f => (
             <div key={f.id} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative overflow-hidden">
@@ -153,22 +152,13 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
                 <div>
                   <h4 className="font-black text-slate-900 text-lg">{f.name}</h4>
                   <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">
-                    {f.items.length} items
+                    {f.items.length} articles
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-black text-slate-900">${f.total.toFixed(2)}</p>
-                  <p className="text-[10px] font-bold text-emerald-500 uppercase">Includes Tax & Tip</p>
+                  <p className="text-[10px] font-bold text-emerald-500 uppercase">Avec taxes & tips</p>
                 </div>
-              </div>
-              
-              <div className="space-y-2 pt-4 border-t border-slate-50">
-                {f.items.map((item, i) => (
-                  <div key={i} className="flex justify-between text-sm">
-                    <span className="text-slate-500">{item.name}</span>
-                    <span className="font-bold text-slate-700">${item.price.toFixed(2)}</span>
-                  </div>
-                ))}
               </div>
             </div>
           ))}
@@ -181,16 +171,13 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ items, friends, initialTax,
           onClick={shareResult}
           className="flex-1 py-4 bg-slate-100 text-slate-900 rounded-2xl font-bold flex items-center justify-center space-x-2 active:scale-95 transition-all"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-          </svg>
-          <span>Share</span>
+          <span>Partager</span>
         </button>
         <button 
           onClick={handleFinish}
           className="flex-[2] py-4 bg-emerald-500 text-white rounded-2xl font-bold shadow-xl active:scale-95 transition-all hover:bg-emerald-600"
         >
-          Finish & Save
+          Terminer & Sauver
         </button>
       </div>
     </div>

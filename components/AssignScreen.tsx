@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ReceiptItem, Friend } from '../types';
+import { ReceiptItem, Friend } from '../types.ts';
 
 interface AssignScreenProps {
   items: ReceiptItem[];
@@ -42,7 +42,7 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
     setShowAddFriend(false);
   };
 
-  const allAssigned = items.every(item => item.assignedTo.length > 0);
+  const allAssigned = items.length > 0 && items.every(item => item.assignedTo.length > 0);
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white">
@@ -83,7 +83,7 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <span className="text-[10px] font-bold text-slate-400">Add</span>
+          <span className="text-[10px] font-bold text-slate-400">Ajouter</span>
         </button>
       </div>
 
@@ -105,7 +105,7 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
                 <h4 className="font-bold text-slate-900 leading-tight">{item.name}</h4>
                 <div className="flex flex-wrap mt-2 gap-1">
                   {item.assignedTo.length === 0 ? (
-                    <span className="text-[10px] font-bold text-slate-300 uppercase">Unassigned</span>
+                    <span className="text-[10px] font-bold text-slate-300 uppercase">Non assigné</span>
                   ) : (
                     item.assignedTo.map(fid => {
                       const f = friends.find(fr => fr.id === fid);
@@ -124,7 +124,7 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
               </div>
               <div className="text-right flex flex-col items-end">
                 <span className="text-lg font-black text-slate-900">${item.price.toFixed(2)}</span>
-                <span className="text-[10px] font-bold text-slate-400">Qty: {item.quantity}</span>
+                <span className="text-[10px] font-bold text-slate-400">Qté: {item.quantity}</span>
                 {item.assignedTo.length > 1 && (
                   <span className="text-[9px] font-bold text-emerald-500 uppercase mt-1">
                     Split ${(item.price / item.assignedTo.length).toFixed(2)} ea
@@ -144,7 +144,7 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
             allAssigned ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
           }`}
         >
-          {allAssigned ? 'Review Totals' : 'Assign All Items'}
+          {allAssigned ? 'Vérifier les totaux' : 'Assigner tous les articles'}
         </button>
       </div>
 
@@ -152,11 +152,11 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
       {showAddFriend && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
           <div className="bg-white w-full rounded-3xl p-6 shadow-2xl">
-            <h3 className="text-xl font-black text-slate-900 mb-4">Add Friend</h3>
+            <h3 className="text-xl font-black text-slate-900 mb-4">Ajouter un ami</h3>
             <input 
               autoFocus
               type="text" 
-              placeholder="Name" 
+              placeholder="Nom" 
               className="w-full bg-slate-100 border-none rounded-2xl p-4 text-slate-900 font-bold text-lg mb-6 focus:ring-2 focus:ring-emerald-500 outline-none"
               value={newFriendName}
               onChange={(e) => setNewFriendName(e.target.value)}
@@ -167,13 +167,13 @@ const AssignScreen: React.FC<AssignScreenProps> = ({ items, setItems, friends, s
                 onClick={() => setShowAddFriend(false)}
                 className="flex-1 py-4 font-bold text-slate-400 hover:text-slate-600"
               >
-                Cancel
+                Annuler
               </button>
               <button 
                 onClick={addFriend}
                 className="flex-2 bg-emerald-500 text-white py-4 px-8 rounded-2xl font-bold hover:bg-emerald-600 active:scale-95 transition-all"
               >
-                Add Friend
+                Ajouter
               </button>
             </div>
           </div>

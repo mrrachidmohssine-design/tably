@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { scanReceipt } from '../services/geminiService';
+import { scanReceipt } from '../services/geminiService.ts';
 
 interface ScanningScreenProps {
   onComplete: (items: any[]) => void;
@@ -26,7 +26,7 @@ const ScanningScreen: React.FC<ScanningScreenProps> = ({ onComplete, onCancel })
         const result = await scanReceipt(base64String);
         onComplete(result);
       } catch (err) {
-        setError("Couldn't read the receipt. Try again.");
+        setError("Impossible de lire le ticket. Réessayez.");
         setLoading(false);
       }
     };
@@ -43,7 +43,7 @@ const ScanningScreen: React.FC<ScanningScreenProps> = ({ onComplete, onCancel })
             </svg>
           </div>
           <h2 className="text-2xl font-bold mb-2">Upload Receipt</h2>
-          <p className="text-slate-400 mb-8 max-w-xs mx-auto">Upload a clear photo of your receipt to begin splitting.</p>
+          <p className="text-slate-400 mb-8 max-w-xs mx-auto">Importez une photo claire de votre ticket de caisse.</p>
           
           <input 
             type="file" 
@@ -58,13 +58,13 @@ const ScanningScreen: React.FC<ScanningScreenProps> = ({ onComplete, onCancel })
               onClick={() => fileInputRef.current?.click()}
               className="w-full bg-emerald-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-emerald-600 active:scale-95 transition-all shadow-xl"
             >
-              Choose Photo
+              Choisir une photo
             </button>
             <button 
               onClick={onCancel}
               className="w-full py-4 text-slate-400 font-bold hover:text-white transition-colors"
             >
-              Cancel
+              Annuler
             </button>
           </div>
 
@@ -81,8 +81,8 @@ const ScanningScreen: React.FC<ScanningScreenProps> = ({ onComplete, onCancel })
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold mb-2 tracking-tight">Scanning...</h2>
-          <p className="text-slate-400 animate-pulse">Our AI is reading your items</p>
+          <h2 className="text-2xl font-bold mb-2 tracking-tight">Analyse en cours...</h2>
+          <p className="text-slate-400 animate-pulse">L'IA déchiffre vos articles</p>
         </div>
       )}
     </div>

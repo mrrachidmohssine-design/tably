@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SplitRecord } from '../types';
+import { SplitRecord } from '../types.ts';
 
 interface HomeScreenProps {
   onScanStart: () => void;
